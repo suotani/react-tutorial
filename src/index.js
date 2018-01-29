@@ -1,3 +1,12 @@
+/*
+TODOs
+1. Display the location for each move in the format (col, row) in the move history list.
+2. Bold the currently selected item in the move list.
+3. Rewrite Board to use two loops to make the squares instead of hardcoding them.
+4. Add a toggle button that lets you sort the moves in either ascending or descending order.
+5. When someone wins, highlight the three squares that caused the win.
+*/
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -50,6 +59,10 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        position: {
+          col: null,
+          row: null,
+        },
       }],
       xIsNext: true,
       stepNumber: 0,
@@ -60,14 +73,18 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice(); //sliceでコピーしている。sliceがなかったら同じポインタを参照してしまう（連動して変わってしまう）
+    
     //勝者が決定したらクリックイベントは何もしない
-    if(caclulateWinner(squares) || squares[i]) {
-      return;
-    }
+    if(caclulateWinner(squares) || squares[i]) {return;}
+
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
         squares: squares,
+        position: {
+          row: parseInt(i / 3),
+          col: i % 3,
+        },
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
@@ -84,12 +101,14 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
+    const position = current.position;
     const winner = caclulateWinner(current.squares);
     const moves = history.map((step, index) => {
       const desc = index ? 'Go to move #' + index : 'Go to game start';
+      const turn = index ? "(" + step.position.row + "," + step.position.col + ")" : '';
       return (
         <li key={index}>
-          <button onClick={() => this.jumpTo(index)}>{desc}</button>
+          <button onClick={() => this.jumpTo(index)}>{desc}</button>{turn}
         </li>
       )
     })
