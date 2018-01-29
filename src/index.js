@@ -52,11 +52,12 @@ class Game extends React.Component {
         squares: Array(9).fill(null),
       }],
       xIsNext: true,
+      stepNumber: 0,
     }
   }
 
   handleClick(i){
-    const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice(); //sliceでコピーしている。sliceがなかったら同じポインタを参照してしまう（連動して変わってしまう）
     //勝者が決定したらクリックイベントは何もしない
@@ -68,14 +69,30 @@ class Game extends React.Component {
       history: history.concat([{
         squares: squares,
       }]),
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     })
   }
 
+  jumpTo(index){
+    this.setState({
+      stepNumber: index,
+      xIsNext: (index % 2) === 0,
+    });
+  }
+
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
     const winner = caclulateWinner(current.squares);
+    const moves = history.map((step, index) => {
+      const desc = index ? 'Go to move #' + index : 'Go to game start';
+      return (
+        <li key={index}>
+          <button onClick={() => this.jumpTo(index)}>{desc}</button>
+        </li>
+      )
+    })
 
     let status;
     if(winner){
@@ -94,7 +111,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
@@ -123,7 +140,7 @@ function caclulateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++){
     const [a, b, c] = lines[i];
-    if(squares[a] && squares[a] === squares[b] && squares[a] == squares[c]) {
+    if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }
   }
