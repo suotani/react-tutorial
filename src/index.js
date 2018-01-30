@@ -1,7 +1,5 @@
 /*
 TODOs
-2. Bold the currently selected item in the move list.
-3. Rewrite Board to use two loops to make the squares instead of hardcoding them.
 4. Add a toggle button that lets you sort the moves in either ascending or descending order.
 5. When someone wins, highlight the three squares that caused the win.
 */
@@ -32,21 +30,21 @@ class Board extends React.Component {
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {
+          Array(3).fill(0).map((row, i) => {
+            return (
+              <div className="board-row">
+                {
+                  Array(3).fill(0).map((col, j) => {
+                    return(
+                      this.renderSquare(i * 3 + j)
+                    )
+                  })
+                }
+              </div>
+            )
+          })
+        }
       </div>
     );
   }
