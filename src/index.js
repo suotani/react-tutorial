@@ -1,8 +1,3 @@
-/*
-TODOs
-4. Add a toggle button that lets you sort the moves in either ascending or descending order.
-*/
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -70,15 +65,15 @@ class Game extends React.Component {
       }],
       xIsNext: true,
       stepNumber: 0,
+      order: "asc",
     }
   }
 
   handleClick(i){
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice(); //sliceでコピーしている。sliceがなかったら同じポインタを参照してしまう（連動して変わってしまう）
-    
-    //勝者が決定したらクリックイベントは何もしない
+    const squares = current.squares.slice(); 
+
     if(caclulateWinner(squares) || squares[i]) {return;}
 
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -102,22 +97,33 @@ class Game extends React.Component {
     });
   }
 
+  toggleOrder(){
+    const changed_order = this.state.order === "asc" ? "desc" : "asc";
+    this.setState({
+      order: changed_order,
+    });
+  }
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const results = caclulateWinner(current.squares);
     const winner = results ? results[0] : null;
     const result_line = results ? results[1] : null;
-    const moves = history.map((step, index) => {
+    var moves = history.map((step, index) => {
       const desc = index ? 'Go to move #' + index : 'Go to game start';
       const turn = index ? "(" + step.position.row + "," + step.position.col + ")" : '';
       const idSelectedClass = this.state.stepNumber === index ? "selected" : "";
       return (
-        <li key={index}>
+        <li key={index} className="movesItem">
           <button onClick={() => this.jumpTo(index)} className={idSelectedClass}>{desc}</button>{turn}
         </li>
       )
     })
+
+    if(this.state.order === "desc"){
+      moves = moves.reverse();
+    }
 
     let status;
     if(winner){
@@ -137,6 +143,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div><button onClick={() => this.toggleOrder()}>{this.state.order}</button></div>
           <ol>{moves}</ol>
         </div>
       </div>

@@ -56,3 +56,7 @@ ol, ul {
 .highlight {
   background-color: #e6f117;
 }
+
+.movesItem{
+  list-style-type: none;
+}
