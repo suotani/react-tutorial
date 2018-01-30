@@ -52,3 +52,7 @@ ol, ul {
 .selected {
   font-weight: bold;
 }
+
+.highlight {
+  background-color: #e6f117;
+}
